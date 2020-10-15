@@ -28,6 +28,7 @@
  * AVIOContext read callback.
  * @example avio_reading.c
  */
+// 一下没看懂是要干嘛
 
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -58,14 +59,22 @@ static int read_packet(void *opaque, uint8_t *buf, int buf_size)
 
 int main(int argc, char *argv[])
 {
-    AVFormatContext *fmt_ctx = NULL;
+    AVFormatContext *fmt_ctx = NULL; 
+    // 格式 Contexts
     AVIOContext *avio_ctx = NULL;
+    // IOContext
     uint8_t *buffer = NULL, *avio_ctx_buffer = NULL;
+    // uint8_t 是什么
     size_t buffer_size, avio_ctx_buffer_size = 4096;
+    // size_t 是什么
     char *input_filename = NULL;
     int ret = 0;
     struct buffer_data bd = { 0 };
+    // 这是干什么
 
+    // 看来是输入一个特定文件
+    // 啥叫 read from custom buffer
+    // 是为了演示 AVIOContext 吗?
     if (argc != 2) {
         fprintf(stderr, "usage: %s input_file\n"
                 "API example program to show how to read from a custom buffer "

@@ -26,6 +26,7 @@
  *
  * @example decode_video.c
  */
+// 解码视频
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,15 +87,17 @@ int main(int argc, char **argv)
     const AVCodec *codec;
     AVCodecParserContext *parser;
     AVCodecContext *c= NULL;
-    FILE *f;
+    FILE *f; // 文件
     AVFrame *frame;
-    uint8_t inbuf[INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE];
-    uint8_t *data;
+    uint8_t inbuf[INBUF_SIZE + AV_INPUT_BUFFER_PADDING_SIZE]; 
+    // inbuf 应该是每次读入的 buffer 大小
+    uint8_t *data; // 数据指针？
     size_t   data_size;
     int ret;
-    AVPacket *pkt;
+    AVPacket *pkt; // Packet 是个什么概念
 
     if (argc <= 2) {
+        // 输入文件要是 mpeg1video？
         fprintf(stderr, "Usage: %s <input file> <output file>\n"
                 "And check your input file is encoded by mpeg1video please.\n", argv[0]);
         exit(0);
@@ -108,6 +111,7 @@ int main(int argc, char **argv)
 
     /* set end of buffer to 0 (this ensures that no overreading happens for damaged MPEG streams) */
     memset(inbuf + INBUF_SIZE, 0, AV_INPUT_BUFFER_PADDING_SIZE);
+    // ?
 
     /* find the MPEG-1 video decoder */
     codec = avcodec_find_decoder(AV_CODEC_ID_MPEG1VIDEO);
@@ -115,18 +119,21 @@ int main(int argc, char **argv)
         fprintf(stderr, "Codec not found\n");
         exit(1);
     }
+    // 找到 decoder
 
     parser = av_parser_init(codec->id);
     if (!parser) {
         fprintf(stderr, "parser not found\n");
         exit(1);
     }
+    // parser 是什么？
 
     c = avcodec_alloc_context3(codec);
     if (!c) {
         fprintf(stderr, "Could not allocate video codec context\n");
         exit(1);
     }
+    // context 是什么？
 
     /* For some codecs, such as msmpeg4 and mpeg4, width and height
        MUST be initialized there because this information is not
@@ -137,12 +144,14 @@ int main(int argc, char **argv)
         fprintf(stderr, "Could not open codec\n");
         exit(1);
     }
+    // 打开 codec？？
 
     f = fopen(filename, "rb");
     if (!f) {
         fprintf(stderr, "Could not open %s\n", filename);
         exit(1);
     }
+    // 打开文件
 
     frame = av_frame_alloc();
     if (!frame) {
@@ -151,10 +160,12 @@ int main(int argc, char **argv)
     }
 
     while (!feof(f)) {
+        // while 只要文件还没读完
         /* read raw data from the input file */
         data_size = fread(inbuf, 1, INBUF_SIZE, f);
         if (!data_size)
             break;
+            // 读不到了也是直接 break while
 
         /* use the parser to split the data into frames */
         data = inbuf;
@@ -165,11 +176,12 @@ int main(int argc, char **argv)
                 fprintf(stderr, "Error while parsing\n");
                 exit(1);
             }
-            data      += ret;
-            data_size -= ret;
+            data      += ret; // 读一点加一点？
+            data_size -= ret; // 为啥要 -=
 
             if (pkt->size)
                 decode(c, frame, pkt, outfilename);
+                // 
         }
     }
 

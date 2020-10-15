@@ -83,6 +83,9 @@ enum AVIODirEntryType {
  * Only name and type fields are guaranteed be set.
  * Rest of fields are protocol or/and platform dependent and might be unknown.
  */
+// 原来是定义在这里了
+// typedef struct 是啥
+// https://stackoverflow.com/questions/1675351/typedef-struct-vs-struct-definitions
 typedef struct AVIODirEntry {
     char *name;                           /**< Filename */
     int type;                             /**< Type of the entry */
