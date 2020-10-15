@@ -26,6 +26,7 @@
  *
  * @example decode_audio.c
  */
+// 解码音频
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -121,6 +122,7 @@ int main(int argc, char **argv)
 
     if (argc <= 2) {
         fprintf(stderr, "Usage: %s <input file> <output file>\n", argv[0]);
+        // 为啥有个输出文件，是输出什么
         exit(0);
     }
     filename    = argv[1];
@@ -219,6 +221,7 @@ int main(int argc, char **argv)
     if ((ret = get_format_from_sample_fmt(&fmt, sfmt)) < 0)
         goto end;
 
+    // 怎么播放文件都给出来了
     printf("Play the output audio file with the command:\n"
            "ffplay -f %s -ac %d -ar %d %s\n",
            fmt, n_channels, c->sample_rate,

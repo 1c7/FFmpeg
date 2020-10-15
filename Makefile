@@ -133,7 +133,7 @@ libavutil/ffversion.h .version:
 # force version.sh to run whenever version might have changed
 -include .version
 
-install: install-libs install-headers
+install: install-libs 
 
 install-libs: install-libs-yes
 

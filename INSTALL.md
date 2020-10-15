@@ -1,3 +1,4 @@
+## 官方提供的安装指南
 ## Installing FFmpeg
 
 1. Type `./configure` to create the configuration. A list of configure

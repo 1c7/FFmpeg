@@ -284,6 +284,7 @@ static int file_open_dir(URLContext *h)
 #endif /* HAVE_LSTAT */
 }
 
+// 读取 dir
 static int file_read_dir(URLContext *h, AVIODirEntry **next)
 {
 #if HAVE_LSTAT
@@ -311,6 +312,7 @@ static int file_read_dir(URLContext *h, AVIODirEntry **next)
                 (*next)->type = AVIO_ENTRY_DIRECTORY;
             else if (S_ISFIFO(st.st_mode))
                 (*next)->type = AVIO_ENTRY_NAMED_PIPE;
+                // 给 type 赋予 enum 类型
             else if (S_ISCHR(st.st_mode))
                 (*next)->type = AVIO_ENTRY_CHARACTER_DEVICE;
             else if (S_ISBLK(st.st_mode))
