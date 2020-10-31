@@ -277,17 +277,23 @@ typedef struct AVRegionOfInterest {
 
 /**
  * This structure describes decoded (raw) audio or video data.
+ * 这个 结构描述如何解码 (原始) 音频或者视频数据
  *
  * AVFrame must be allocated using av_frame_alloc(). Note that this only
+ * 必须用 av_frame_alloc() 函数分配内存地址？
  * allocates the AVFrame itself, the buffers for the data must be managed
  * through other means (see below).
  * AVFrame must be freed with av_frame_free().
+ * 必须用这种方式释放
  *
  * AVFrame is typically allocated once and then reused multiple times to hold
+ * 一般初始化一次，然后复用多次，存不同数据
  * different data (e.g. a single AVFrame to hold frames received from a
  * decoder). In such a case, av_frame_unref() will free any references held by
+ * 从 decoder 手上获取数据
  * the frame and reset it to its original clean state before it
  * is reused again.
+ * 再复用之前，会用 av_frame_unref() 清空内容，为下一次使用做好准备
  *
  * The data described by an AVFrame is usually reference counted through the
  * AVBuffer API. The underlying buffer references are stored in AVFrame.buf /
@@ -305,6 +311,7 @@ typedef struct AVRegionOfInterest {
  * C structure field name for fields accessible through AVOptions. The AVClass
  * for AVFrame can be obtained from avcodec_get_frame_class()
  */
+// AVFrame 的定义
 typedef struct AVFrame {
 #define AV_NUM_DATA_POINTERS 8
     /**

@@ -28,6 +28,7 @@
  * decode audio and video data.
  * @example demuxing_decoding.c
  */
+// 演示如何 demux 和 decode 音频和视频数据
 
 #include <libavutil/imgutils.h>
 #include <libavutil/samplefmt.h>
@@ -55,6 +56,7 @@ static AVPacket pkt;
 static int video_frame_count = 0;
 static int audio_frame_count = 0;
 
+// 输入一个 AVFrame
 static int output_video_frame(AVFrame *frame)
 {
     if (frame->width != width || frame->height != height ||

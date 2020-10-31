@@ -1,3 +1,5 @@
+# 这个可以单独编译 example 吗？
+
 EXAMPLES-$(CONFIG_AVIO_LIST_DIR_EXAMPLE)     += avio_list_dir
 EXAMPLES-$(CONFIG_AVIO_READING_EXAMPLE)      += avio_reading
 EXAMPLES-$(CONFIG_DECODE_AUDIO_EXAMPLE)      += decode_audio

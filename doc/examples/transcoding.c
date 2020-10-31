@@ -27,6 +27,7 @@
  * API example for demuxing, decoding, filtering, encoding and muxing
  * @example transcoding.c
  */
+// 这个例子好像还蛮多，600多行
 
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -502,6 +503,7 @@ static int flush_encoder(unsigned int stream_index)
     return ret;
 }
 
+// 看看 main 里面都干啥了
 int main(int argc, char **argv)
 {
     int ret;
@@ -513,11 +515,13 @@ int main(int argc, char **argv)
     int got_frame;
     int (*dec_func)(AVCodecContext *, AVFrame *, int *, const AVPacket *);
 
+    // 输出，输出文件
     if (argc != 3) {
         av_log(NULL, AV_LOG_ERROR, "Usage: %s <input file> <output file>\n", argv[0]);
         return 1;
     }
 
+    // 尝试打开这俩文件，以及 filter，失败就退出
     if ((ret = open_input_file(argv[1])) < 0)
         goto end;
     if ((ret = open_output_file(argv[2])) < 0)

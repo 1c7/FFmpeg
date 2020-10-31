@@ -73,6 +73,7 @@ static FILE *report_file;
 static int report_file_level = AV_LOG_DEBUG;
 int hide_banner = 0;
 
+// ?
 enum show_muxdemuxers {
     SHOW_DEFAULT,
     SHOW_DEMUXERS,

@@ -31,6 +31,7 @@
  * This example shows how to do HW-accelerated decoding with output
  * frames from the HW video surfaces.
  */
+// 硬件加速解码？
 
 #include <stdio.h>
 

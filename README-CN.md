@@ -45,6 +45,28 @@ goto fail;
 ```
 是干什么？
 
+```
+goto end;
+```
+
+## .d 文件是什么？
+比如 doc/examples/avio_list_dir.d
+```
+doc/examples/avio_list_dir.o: doc/examples/avio_list_dir.c \
+  libavcodec/avcodec.h libavutil/samplefmt.h libavutil/avutil.h \
+  libavutil/common.h libavutil/attributes.h libavutil/macros.h \
+  libavutil/version.h libavutil/avconfig.h libavutil/mem.h \
+  libavutil/error.h libavutil/rational.h libavutil/mathematics.h \
+  libavutil/intfloat.h libavutil/log.h libavutil/pixfmt.h \
+  libavutil/buffer.h libavutil/cpu.h libavutil/channel_layout.h \
+  libavutil/dict.h libavutil/frame.h libavutil/hwcontext.h \
+  libavcodec/bsf.h libavcodec/codec_id.h libavcodec/codec_par.h \
+  libavcodec/packet.h libavcodec/version.h libavcodec/codec.h \
+  libavcodec/codec_desc.h libavformat/avformat.h libavformat/avio.h \
+  libavformat/version.h
+```
+应该和编译有关，是依赖哪些文件
+
 
 ## Packet, AVPacket
 https://www.cnblogs.com/wangguchangqing/p/5790705.html

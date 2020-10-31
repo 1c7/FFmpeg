@@ -28,6 +28,7 @@
  * This example will serve a file without decoding or demuxing it over http.
  * Multiple clients can connect and will receive the same file.
  */
+// 通过 http 提供一个文件
 
 #include <libavformat/avformat.h>
 #include <libavutil/opt.h>

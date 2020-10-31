@@ -22,8 +22,12 @@
  * @file
  * simple media player based on the FFmpeg libraries
  */
+// 这个 ffplayer 要仔细看看
+// 1. 先看看怎么编译
 
 #include "config.h"
+// 引入了什么？ 没有  config.h 这个文件阿
+// https://stackoverflow.com/questions/9439744/gtk-cant-find-config-h
 #include <inttypes.h>
 #include <math.h>
 #include <limits.h>
@@ -56,16 +60,21 @@
 
 #include <SDL.h>
 #include <SDL_thread.h>
+// 引入 SDL
 
 #include "cmdutils.h"
 
 #include <assert.h>
 
 const char program_name[] = "ffplay";
+// 程序名
 const int program_birth_year = 2003;
+// 出生日期
 
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
+// 最大 queue 大小
 #define MIN_FRAMES 25
+// 最少25帧？
 #define EXTERNAL_CLOCK_MIN_FRAMES 2
 #define EXTERNAL_CLOCK_MAX_FRAMES 10
 
@@ -150,8 +159,10 @@ typedef struct Clock {
     int paused;
     int *queue_serial;    /* pointer to the current packet queue serial, used for obsolete clock detection */
 } Clock;
+// 时钟？有什么用？
 
 /* Common struct for handling all types of decoded data and allocated render buffers. */
+// 共用的  struct 存 decoed 的数据
 typedef struct Frame {
     AVFrame *frame;
     AVSubtitle sub;
@@ -179,12 +190,14 @@ typedef struct FrameQueue {
     SDL_cond *cond;
     PacketQueue *pktq;
 } FrameQueue;
+// queue 是做什么？一堆 Frame？
 
 enum {
     AV_SYNC_AUDIO_MASTER, /* default choice */
     AV_SYNC_VIDEO_MASTER,
     AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
 };
+// 应该是怎么同步的 enum
 
 typedef struct Decoder {
     AVPacket pkt;
@@ -200,10 +213,14 @@ typedef struct Decoder {
     AVRational next_pts_tb;
     SDL_Thread *decoder_tid;
 } Decoder;
+// 解码器
 
+// 视频状态
 typedef struct VideoState {
     SDL_Thread *read_tid;
+    // 这个 SDL_Thread 是什么？
     AVInputFormat *iformat;
+    // 输入格式？
     int abort_request;
     int force_refresh;
     int paused;
@@ -220,18 +237,23 @@ typedef struct VideoState {
     Clock audclk;
     Clock vidclk;
     Clock extclk;
+    // 三个时钟是干嘛的？
 
     FrameQueue pictq;
     FrameQueue subpq;
     FrameQueue sampq;
+    // 这3个又是干嘛的？
 
     Decoder auddec;
     Decoder viddec;
     Decoder subdec;
+    // 三个解码器
 
     int audio_stream;
+    // 音频流为什么是 int
 
     int av_sync_type;
+    // 应该是同步类型
 
     double audio_clock;
     int audio_clock_serial;
@@ -273,6 +295,7 @@ typedef struct VideoState {
     SDL_Texture *vis_texture;
     SDL_Texture *sub_texture;
     SDL_Texture *vid_texture;
+    // 三个 Texture
 
     int subtitle_stream;
     AVStream *subtitle_st;
@@ -308,6 +331,7 @@ typedef struct VideoState {
 } VideoState;
 
 /* options specified by the user */
+// 用户指定的选项
 static AVInputFormat *file_iformat;
 static const char *input_filename;
 static const char *window_title;
@@ -370,6 +394,7 @@ static SDL_Renderer *renderer;
 static SDL_RendererInfo renderer_info = {0};
 static SDL_AudioDeviceID audio_dev;
 
+// 像素格式
 static const struct TextureFormatEntry {
     enum AVPixelFormat format;
     int texture_fmt;
@@ -532,6 +557,7 @@ static void packet_queue_abort(PacketQueue *q)
     SDL_UnlockMutex(q->mutex);
 }
 
+// ???
 static void packet_queue_start(PacketQueue *q)
 {
     SDL_LockMutex(q->mutex);
@@ -579,6 +605,7 @@ static int packet_queue_get(PacketQueue *q, AVPacket *pkt, int block, int *seria
     return ret;
 }
 
+// 解码器初始化
 static void decoder_init(Decoder *d, AVCodecContext *avctx, PacketQueue *queue, SDL_cond *empty_queue_cond) {
     memset(d, 0, sizeof(Decoder));
     d->avctx = avctx;
@@ -588,6 +615,7 @@ static void decoder_init(Decoder *d, AVCodecContext *avctx, PacketQueue *queue, 
     d->pkt_serial = -1;
 }
 
+// 用解码器来解码帧
 static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
     int ret = AVERROR(EAGAIN);
 
@@ -680,6 +708,7 @@ static int decoder_decode_frame(Decoder *d, AVFrame *frame, AVSubtitle *sub) {
     }
 }
 
+// 删掉 decoder
 static void decoder_destroy(Decoder *d) {
     av_packet_unref(&d->pkt);
     avcodec_free_context(&d->avctx);
@@ -828,6 +857,7 @@ static void decoder_abort(Decoder *d, FrameQueue *fq)
     packet_queue_flush(d->queue);
 }
 
+// 填充长方形
 static inline void fill_rectangle(int x, int y, int w, int h)
 {
     SDL_Rect rect;
@@ -839,6 +869,7 @@ static inline void fill_rectangle(int x, int y, int w, int h)
         SDL_RenderFillRect(renderer, &rect);
 }
 
+// ?
 static int realloc_texture(SDL_Texture **texture, Uint32 new_format, int new_width, int new_height, SDL_BlendMode blendmode, int init_texture)
 {
     Uint32 format;
@@ -959,6 +990,7 @@ static int upload_texture(SDL_Texture **tex, AVFrame *frame, struct SwsContext *
     return ret;
 }
 
+// SDL_VERSION_ATLEAST 似乎是版本检查
 static void set_sdl_yuv_conversion_mode(AVFrame *frame)
 {
 #if SDL_VERSION_ATLEAST(2,0,8)
@@ -975,6 +1007,7 @@ static void set_sdl_yuv_conversion_mode(AVFrame *frame)
 #endif
 }
 
+// 视频图片显示
 static void video_image_display(VideoState *is)
 {
     Frame *vp;
@@ -1063,6 +1096,7 @@ static inline int compute_mod(int a, int b)
     return a < 0 ? a%b + b : a%b;
 }
 
+// 音频
 static void video_audio_display(VideoState *s)
 {
     int i, i_start, x, y1, y, ys, delay, n, nb_display_channels;
@@ -1262,11 +1296,14 @@ static void stream_component_close(VideoState *is, int stream_index)
     }
 }
 
+// 关掉流
 static void stream_close(VideoState *is)
 {
     /* XXX: use a special url_shutdown call to abort parse cleanly */
     is->abort_request = 1;
+    // abort_request 设置为 1 代表 true？
     SDL_WaitThread(is->read_tid, NULL);
+    // SDL_WaitThread 是什么
 
     /* close each stream */
     if (is->audio_stream >= 0)
@@ -1275,21 +1312,29 @@ static void stream_close(VideoState *is)
         stream_component_close(is, is->video_stream);
     if (is->subtitle_stream >= 0)
         stream_component_close(is, is->subtitle_stream);
+    // 关闭各个流
 
     avformat_close_input(&is->ic);
+    // 这是在关闭什么？
 
     packet_queue_destroy(&is->videoq);
     packet_queue_destroy(&is->audioq);
     packet_queue_destroy(&is->subtitleq);
+    // packet queue 是什么？
 
+    // 这一堆又是什么？
     /* free all pictures */
     frame_queue_destory(&is->pictq);
     frame_queue_destory(&is->sampq);
     frame_queue_destory(&is->subpq);
+    // frame queue 是什么
     SDL_DestroyCond(is->continue_read_thread);
+    // SDL 这是在 Destroy 什么？
     sws_freeContext(is->img_convert_ctx);
     sws_freeContext(is->sub_convert_ctx);
+    // free 什么 context?
     av_free(is->filename);
+    // 
     if (is->vis_texture)
         SDL_DestroyTexture(is->vis_texture);
     if (is->vid_texture)
@@ -3682,15 +3727,21 @@ void show_help_default(const char *opt, const char *arg)
 }
 
 /* Called from the main */
+// 主函数
 int main(int argc, char **argv)
 {
-    int flags;
+    int flags; 
+    // ?
     VideoState *is;
+    // ?
 
     init_dynload();
+    // 初始化什么
 
     av_log_set_flags(AV_LOG_SKIP_REPEATED);
+    // log 设置了什么
     parse_loglevel(argc, argv, options);
+    // ？
 
     /* register all codecs, demux and protocols */
 #if CONFIG_AVDEVICE
@@ -3699,14 +3750,18 @@ int main(int argc, char **argv)
     avformat_network_init();
 
     init_opts();
+    // 初始化选项？
 
     signal(SIGINT , sigterm_handler); /* Interrupt (ANSI).    */
     signal(SIGTERM, sigterm_handler); /* Termination (ANSI).  */
+    // 信号处理器？
 
     show_banner(argc, argv, options);
+    // 啥？
 
     parse_options(NULL, argc, argv, options, opt_input_file);
 
+    // 如果没提供文件名
     if (!input_filename) {
         show_usage();
         av_log(NULL, AV_LOG_FATAL, "An input file must be specified\n");

@@ -22,6 +22,7 @@
  * @file
  * simple media prober based on the FFmpeg libraries
  */
+// 看看 probe
 
 #include "config.h"
 #include "libavutil/ffversion.h"

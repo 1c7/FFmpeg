@@ -26,6 +26,7 @@
  *
  * @example encode_audio.c
  */
+// 音频编码例子
 
 #include <stdint.h>
 #include <stdio.h>
@@ -122,9 +123,9 @@ static void encode(AVCodecContext *ctx, AVFrame *frame, AVPacket *pkt,
 
 int main(int argc, char **argv)
 {
-    const char *filename;
-    const AVCodec *codec;
-    AVCodecContext *c= NULL;
+    const char *filename; // 文件名
+    const AVCodec *codec; // codec
+    AVCodecContext *c= NULL; // context 定义音频的各种信息
     AVFrame *frame;
     AVPacket *pkt;
     int i, j, k, ret;
@@ -132,6 +133,7 @@ int main(int argc, char **argv)
     uint16_t *samples;
     float t, tincr;
 
+    // 为啥只有一个输出文件
     if (argc <= 1) {
         fprintf(stderr, "Usage: %s <output file>\n", argv[0]);
         return 0;
@@ -144,15 +146,18 @@ int main(int argc, char **argv)
         fprintf(stderr, "Codec not found\n");
         exit(1);
     }
+    // 用 mp2 编码？
 
     c = avcodec_alloc_context3(codec);
     if (!c) {
         fprintf(stderr, "Could not allocate audio codec context\n");
         exit(1);
     }
+    // 分配 audio codec context
 
     /* put sample parameters */
     c->bit_rate = 64000;
+    // 
 
     /* check that the encoder supports s16 pcm input */
     c->sample_fmt = AV_SAMPLE_FMT_S16;

@@ -26,6 +26,7 @@
  *
  * @example encode_video.c
  */
+// 音频编码例子
 
 #include <stdio.h>
 #include <stdlib.h>

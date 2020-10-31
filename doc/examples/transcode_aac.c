@@ -27,6 +27,7 @@
  * Formats other than MP4 are supported based on the output file extension.
  * @author Andreas Unterweger (dustsigns@gmail.com)
  */
+// 输入一个 mp4 文件，把里面的音频弄成 aac
 
 #include <stdio.h>
 
